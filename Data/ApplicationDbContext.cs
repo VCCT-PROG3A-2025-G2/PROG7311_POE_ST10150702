@@ -12,6 +12,7 @@ namespace PROG7311_POE_ST10150702.Data
         }
 
         public DbSet<Farmer> Farmers { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<Product> Products { get; set; }
     }
 }
