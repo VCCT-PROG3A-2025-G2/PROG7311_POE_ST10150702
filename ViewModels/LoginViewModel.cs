@@ -1,18 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// ViewModels/LoginViewModel.cs
+using System.ComponentModel.DataAnnotations;
 
-namespace PROG7311_POE_ST10150702.ViewModels
+public class LoginViewModel
 {
-    public class LoginViewModel
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
-    }
+    [Display(Name = "Remember me?")]
+    public bool RememberMe { get; set; }
+
+    [Display(Name = "Employee Login")]
+    public bool IsEmployeeLogin { get; set; }
 }

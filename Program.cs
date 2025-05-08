@@ -2,6 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PROG7311_POE_ST10150702.Data;
 using PROG7311_POE_ST10150702.Models;
+using PROG7311_POE_ST10150702.Filters;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +19,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Register the filter with proper dependencies
+builder.Services.AddScoped<RoleRedirectFilter>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -26,15 +35,54 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Seed roles and admin user
-using (var scope = app.Services.CreateScope())
+// Middleware registration (simplified)
+app.Use(async (context, next) =>
 {
+    // Skip filter for static files
+    if (context.Request.Path.StartsWithSegments("/lib") ||
+        context.Request.Path.StartsWithSegments("/css") ||
+        context.Request.Path.StartsWithSegments("/js"))
+    {
+        await next();
+        return;
+    }
+
+    var filter = context.RequestServices.GetRequiredService<RoleRedirectFilter>();
+    var actionContext = new ActionContext
+    {
+        HttpContext = context,
+        RouteData = context.GetRouteData(),
+        ActionDescriptor = new ControllerActionDescriptor()
+    };
+
+    await filter.OnActionExecutionAsync(
+        new ActionExecutingContext(
+            actionContext,
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object>(),
+            context.RequestServices),
+        async () => {
+            await next();
+            return new ActionExecutedContext(actionContext, new List<IFilterMetadata>(), null);
+        });
+});
+
+// Database seeding
+await SeedDatabase(app);
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}/{id?}");
+
+app.Run();
+
+async Task SeedDatabase(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     try
     {
@@ -42,48 +90,52 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-        // Ensure database is created and migrations are applied
-        context.Database.Migrate();
+        await context.Database.MigrateAsync();
 
-        // Seed roles
-        if (!await roleManager.RoleExistsAsync("Farmer"))
+        var roles = new[] { "Farmer", "Employee", "Admin" };
+        foreach (var role in roles)
         {
-            await roleManager.CreateAsync(new IdentityRole("Farmer"));
-        }
-        if (!await roleManager.RoleExistsAsync("Employee"))
-        {
-            await roleManager.CreateAsync(new IdentityRole("Employee"));
-        }
-
-        // Admin Role Seeding
-        /*
-        var adminUser = await userManager.FindByEmailAsync("admin@example.com");
-        if (adminUser == null)
-        {
-            var admin = new ApplicationUser
+            if (!await roleManager.RoleExistsAsync(role))
             {
-                UserName = "admin@example.com",
-                Email = "admin@example.com",
-                FirstName = "Admin",
-                LastName = "User"
-            };
-            var result = await userManager.CreateAsync(admin, "Admin@123");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, "Employee");
+                await roleManager.CreateAsync(new IdentityRole(role));
             }
         }
-        */
+
+        var adminEmail = "admin@farmcentral.com";
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
+        {
+            adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                FirstName = "Admin",
+                LastName = "Account",
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(adminUser, "Admin@1234!");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRolesAsync(adminUser, roles);
+
+                // Only create employee profile if needed
+                if (!context.Employees.Any(e => e.UserId == adminUser.Id))
+                {
+                    context.Employees.Add(new Employee
+                    {
+                        FirstName = adminUser.FirstName,
+                        LastName = adminUser.LastName,
+                        UserId = adminUser.Id
+                    });
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
+        logger.LogError(ex, "Seeding failed");
     }
 }
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
-
-app.Run();
