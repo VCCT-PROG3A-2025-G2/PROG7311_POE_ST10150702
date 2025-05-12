@@ -61,27 +61,26 @@ namespace PROG7311_POE_ST10150702.Controllers
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation($"User {user.Email} logged in successfully.");
-
                     var roles = await _userManager.GetRolesAsync(user);
-                    _logger.LogInformation($"User roles: {string.Join(",", roles)}");
 
-                    // TEMPORARY: Force all farmers to Home/Index for testing
-                    if (roles.Contains("Farmer"))
+                    // Debug output (check server logs)
+                    Console.WriteLine($"User roles: {string.Join(", ", roles)}");
+
+                    // Role priority: Admin > Employee > Farmer
+                    if (roles.Contains("Admin"))
                     {
-                        _logger.LogInformation("DEBUG: Redirecting farmer to Home/Index");
-                        return RedirectToAction("FarmerView", "Home"); // Testing redirect
-                    }
-                    // Keep other role logic intact
-                    else if (roles.Contains("Admin"))
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
+                        return RedirectToAction("Dashboard", "Admin"); // Explicit Admin redirect
                     }
                     else if (roles.Contains("Employee"))
                     {
-                        return RedirectToAction("EmployeeView", "Dashboard");
+                        return RedirectToAction("EmployeeView", "Home");
+                    }
+                    else if (roles.Contains("Farmer"))
+                    {
+                        return RedirectToAction("FarmerView", "Home");
                     }
 
+                    // Fallback for users with no roles
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -132,7 +131,7 @@ namespace PROG7311_POE_ST10150702.Controllers
                 await _context.SaveChangesAsync();
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("FarmerView", "Dashboard");
+                return RedirectToAction("FarmerView", "Home");
             }
 
             foreach (var error in result.Errors)

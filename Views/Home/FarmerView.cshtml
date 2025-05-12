@@ -1,6 +1,114 @@
-﻿@{
+﻿@model PROG7311_POE_ST10150702.Models.Product
+@{
     Layout = "_Layout";
-    ViewData["Title"] = "TEST Farmer View";
+    ViewData["Title"] = "Farmer Dashboard";
 }
-<h1 style="color: red;">FARMER VIEW TEST</h1>
-<p>If this appears, the original file was corrupted.</p>
+
+<div class="container mt-5">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <h2>Add New Product</h2>
+    <p>DEBUG: Current FarmerId = @ViewBag.FarmerId</p>
+
+    <!-- Adding a Product -->
+    <form asp-action="AddProduct" asp-controller="Home" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label asp-for="Name" class="control-label">Product Name</label>
+            <input asp-for="Name" class="form-control" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Category" class="control-label">Category</label>
+            <select asp-for="Category" class="form-control" required>
+                <option value="">-- Select Category --</option>
+                <option value="Seeds & Plants">Seeds & Plants</option>
+                <option value="Fertilizers & Soil Enhancements">Fertilizers & Soil Enhancements</option>
+                <option value="Pesticides & Herbicides">Pesticides & Herbicides</option>
+                <option value="Farming Tools & Equipment">Farming Tools & Equipment</option>
+                <option value="Irrigation Supplies">Irrigation Supplies</option>
+                <option value="Animal Feed & Livestock Supplies">Animal Feed & Livestock Supplies</option>
+                <option value="Protective Gear & Clothing">Protective Gear & Clothing</option>
+                <option value="Storage & Packing Materials">Storage & Packing Materials</option>
+            </select>
+            <span asp-validation-for="Category" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ProductionDate" class="control-label">Production Date</label>
+            <input asp-for="ProductionDate" type="date" class="form-control" required />
+            <span asp-validation-for="ProductionDate" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" asp-for="FarmerId" value="@ViewBag.FarmerId" />
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </div>
+    </form>
+
+
+    <!-- Viewing Their Own Products -->
+    <div class="mt-5">
+        <h3>Your Products</h3>
+        @if (ViewBag.FarmerProducts != null && ((List<Product>)ViewBag.FarmerProducts).Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Production Date</th>
+                            <th>Days Since Production</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in (List<Product>)ViewBag.FarmerProducts)
+                        {
+                            <tr>
+                                <td>@product.Name</td>
+                                <td>@product.Category</td>
+                                <td>@product.ProductionDate.ToString("yyyy-MM-dd")</td>
+                                <td>@((DateTime.Now - product.ProductionDate).Days) days</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">You haven't added any products yet.</div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <style>
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #343a40;
+            color: white;
+        }
+    </style>
+}

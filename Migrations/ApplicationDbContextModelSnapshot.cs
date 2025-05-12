@@ -22,6 +22,33 @@ namespace PROG7311_POE_ST10150702.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Employee", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"));
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("EmployeeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Employees");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -228,37 +255,6 @@ namespace PROG7311_POE_ST10150702.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("PROG7311_POE_ST10150702.Models.Employee", b =>
-                {
-                    b.Property<int>("EmployeeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"));
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("EmployeeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Employees");
-                });
-
             modelBuilder.Entity("PROG7311_POE_ST10150702.Models.Farmer", b =>
                 {
                     b.Property<int>("FarmerId")
@@ -308,6 +304,9 @@ namespace PROG7311_POE_ST10150702.Migrations
                     b.Property<int>("FarmerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FarmerId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -319,7 +318,20 @@ namespace PROG7311_POE_ST10150702.Migrations
 
                     b.HasIndex("FarmerId");
 
+                    b.HasIndex("FarmerId1");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Employee", b =>
+                {
+                    b.HasOne("PROG7311_POE_ST10150702.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -373,17 +385,6 @@ namespace PROG7311_POE_ST10150702.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PROG7311_POE_ST10150702.Models.Employee", b =>
-                {
-                    b.HasOne("PROG7311_POE_ST10150702.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("PROG7311_POE_ST10150702.Models.Farmer", b =>
                 {
                     b.HasOne("PROG7311_POE_ST10150702.Models.ApplicationUser", "User")
@@ -397,13 +398,15 @@ namespace PROG7311_POE_ST10150702.Migrations
 
             modelBuilder.Entity("PROG7311_POE_ST10150702.Models.Product", b =>
                 {
-                    b.HasOne("PROG7311_POE_ST10150702.Models.Farmer", "Farmer")
-                        .WithMany("Products")
+                    b.HasOne("PROG7311_POE_ST10150702.Models.Farmer", null)
+                        .WithMany()
                         .HasForeignKey("FarmerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Farmer");
+                    b.HasOne("PROG7311_POE_ST10150702.Models.Farmer", null)
+                        .WithMany("Products")
+                        .HasForeignKey("FarmerId1");
                 });
 
             modelBuilder.Entity("PROG7311_POE_ST10150702.Models.Farmer", b =>
