@@ -5,6 +5,7 @@ using PROG7311_POE_ST10150702.Data;
 using PROG7311_POE_ST10150702.Models;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using PROG7311_POE_ST10150702.ViewModels;
 
 namespace PROG7311_POE_ST10150702.Controllers
 {
@@ -55,6 +56,7 @@ namespace PROG7311_POE_ST10150702.Controllers
             return View(new Product { FarmerId = farmer.FarmerId });
         }
 
+
         [HttpPost]
         [Authorize(Roles = "Farmer")]
         [ValidateAntiForgeryToken]
@@ -96,9 +98,86 @@ namespace PROG7311_POE_ST10150702.Controllers
         }
 
         [Authorize(Roles = "Employee")]
-        public IActionResult EmployeeView()
+        public async Task<IActionResult> EmployeeView()
         {
-            return View();
+            var model = new EmployeeDashboardViewModel
+            {
+                Farmers = await _context.Farmers
+                    .Include(f => f.User)
+                    .ToListAsync(),
+                Products = await _context.Products
+                    .ToListAsync()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Employee")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddFarmer(
+            string FirstName,
+            string LastName,
+            string Email,
+            string Password,
+            string Region,
+            bool AcceptedPOPPIA)
+        {
+            try
+            {
+                // Check if email already exists
+                var existingUser = await _userManager.FindByEmailAsync(Email);
+                if (existingUser != null)
+                {
+                    TempData["ErrorMessage"] = "Email address is already in use.";
+                    return RedirectToAction("EmployeeView");
+                }
+
+                // Create Identity User
+                var user = new ApplicationUser
+                {
+                    UserName = Email,
+                    Email = Email,
+                    FirstName = FirstName,
+                    LastName = LastName
+                };
+
+                var result = await _userManager.CreateAsync(user, Password);
+
+                if (result.Succeeded)
+                {
+                    // Add to Farmer role
+                    await _userManager.AddToRoleAsync(user, "Farmer");
+
+                    // Create Farmer record
+                    var farmer = new Farmer
+                    {
+                        FirstName = FirstName,
+                        LastName = LastName,
+                        Region = Region,
+                        AcceptedPOPPIA = AcceptedPOPPIA,
+                        UserId = user.Id
+                    };
+
+                    _context.Farmers.Add(farmer);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = $"Farmer {FirstName} {LastName} added successfully!";
+                    return RedirectToAction("EmployeeView");
+                }
+                else
+                {
+                    // Handle identity errors
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    TempData["ErrorMessage"] = $"Failed to create user: {errors}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding farmer");
+                TempData["ErrorMessage"] = "An unexpected error occurred while adding the farmer.";
+            }
+
+            return RedirectToAction("EmployeeView");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

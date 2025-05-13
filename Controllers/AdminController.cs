@@ -28,7 +28,6 @@ namespace PROG7311_POE_ST10150702.Controllers
         public async Task<IActionResult> Dashboard()
         {
             var model = await GetDashboardViewModel();
-            // Initialize the NewEmployee property to prevent null reference
             model.NewEmployee = new Employee();
             return View(model);
         }
@@ -38,7 +37,6 @@ namespace PROG7311_POE_ST10150702.Controllers
         {
             try
             {
-                // Check if email already exists
                 var existingUser = await _userManager.FindByEmailAsync(email);
                 if (existingUser != null)
                 {
@@ -46,7 +44,6 @@ namespace PROG7311_POE_ST10150702.Controllers
                     return RedirectToAction("Dashboard");
                 }
 
-                // Create Identity User
                 var user = new ApplicationUser
                 {
                     UserName = email,
@@ -59,12 +56,8 @@ namespace PROG7311_POE_ST10150702.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Add to Employee role
                     await _userManager.AddToRoleAsync(user, "Employee");
-
-                    // Create Employee record
                     employee.UserId = user.Id;
-                    // Set the User navigation property to null - it will be handled by EF
                     employee.User = null;
 
                     _context.Employees.Add(employee);
@@ -75,7 +68,6 @@ namespace PROG7311_POE_ST10150702.Controllers
                 }
                 else
                 {
-                    // Handle identity errors
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                     TempData["ErrorMessage"] = $"Failed to create user: {errors}";
                 }
@@ -96,20 +88,103 @@ namespace PROG7311_POE_ST10150702.Controllers
                 FarmerCount = await _context.Farmers.CountAsync(),
                 EmployeeCount = await _context.Employees.CountAsync(),
                 ProductCount = await _context.Products.CountAsync(),
-
-                // Load farmers with their users
-                Farmers = await _context.Farmers
-                    .Include(f => f.User)
-                    .ToListAsync(),
-
-                // Load employees with their users
-                Employees = await _context.Employees
-                    .Include(e => e.User)
-                    .ToListAsync(),
-
-                // Load products WITHOUT Include for FarmerId
+                Farmers = await _context.Farmers.Include(f => f.User).ToListAsync(),
+                Employees = await _context.Employees.Include(e => e.User).ToListAsync(),
                 Products = await _context.Products.ToListAsync()
             };
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var employee = await _context.Employees
+                    .Include(e => e.User)
+                    .FirstOrDefaultAsync(e => e.EmployeeId == id);
+
+                if (employee == null)
+                {
+                    return RedirectToAction("Dashboard");
+                }
+
+                if (employee.User != null)
+                {
+                    await _userManager.DeleteAsync(employee.User);
+                }
+
+                _context.Employees.Remove(employee);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] = "Employee deleted successfully!";
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+            }
+
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteFarmer(int id)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var farmer = await _context.Farmers
+                    .Include(f => f.User)
+                    .Include(f => f.Products)
+                    .FirstOrDefaultAsync(f => f.FarmerId == id);
+
+                if (farmer == null)
+                {
+                    return RedirectToAction("Dashboard");
+                }
+
+                if (farmer.Products?.Any() == true)
+                {
+                    _context.Products.RemoveRange(farmer.Products);
+                    await _context.SaveChangesAsync();
+                }
+
+                if (farmer.User != null)
+                {
+                    await _userManager.DeleteAsync(farmer.User);
+                }
+
+                _context.Farmers.Remove(farmer);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] = "Farmer and all associated data deleted successfully!";
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+            }
+
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                var product = await _context.Products.FindAsync(id);
+                if (product != null)
+                {
+                    _context.Products.Remove(product);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Product deleted successfully!";
+                }
+            }
+            catch { }
+
+            return RedirectToAction("Dashboard");
         }
     }
 }
