@@ -1,22 +1,110 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    height: 100%
+}
+
+
+:root {
+    --background: #f1f8f2;
+    --foreground: #1e2e1e;
+    --primary: #2E6F40;
+    --primary-foreground: #f5fdf7;
+    --secondary: #e8f6ec;
+    --secondary-foreground: #1e2e1e;
+    --muted: #ecf7f0;
+    --muted-foreground: #4a5c4a;
+    --accent: #e2f5e8;
+    --accent-foreground: #245b34;
+    --destructive: #e34242;
+    --destructive-foreground: #f8f8f8;
+    --border: #d2e8d9;
+    --input: #d2e8d9;
+    --ring: #2E6F40;
+    --radius: 0.75rem;
+    --card: #ffffff;
+    --card-foreground: #1e2e1e;
+}
+
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: hsl(142, 76%, 30%);
+    }
+
+.form-control {
+    background-color: var(--input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/Images/background.jpg');
+    background-repeat: repeat;
+    background-size: 400px;
+    opacity: 0.2; 
+    z-index: -1;
 }
 
 body {
-  margin-bottom: 60px;
+    background-color: var(--background); 
+    color: var(--foreground);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative; 
+}
+
+    .login-card {
+    background-color: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+    .login-logo img {
+        height: 60px;
+    }
+
+.container-fluid {
+    flex: 1;
+}
+
+.footer {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    padding: 1rem 0;
+    text-align: center;
+    width: 100%;
 }

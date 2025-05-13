@@ -1,14 +1,25 @@
 ﻿@model LoginViewModel
 
-<form asp-action="Login">
-    <!-- Email/Password fields -->
-    <div class="form-group">
-        <input asp-for="Email" class="form-control" placeholder="Email" />
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="login-card">
+                <div class="login-logo">
+                    <img src="~/Images/Logo.png" alt="Agri-Energy Connect Logo" />
+                </div>
+                <form asp-action="Login">
+                    <h2 class="text-center mb-4">Login</h2>
+                    <div class="form-group mb-3">
+                        <input asp-for="Email" class="form-control" placeholder="Email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <input asp-for="Password" class="form-control" placeholder="Password" type="password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <input asp-for="Password" class="form-control" placeholder="Password" />
-    </div>
-
-
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+</div>

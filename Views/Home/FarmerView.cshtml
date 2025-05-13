@@ -4,111 +4,175 @@
     ViewData["Title"] = "Farmer Dashboard";
 }
 
-<div class="container mt-5">
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-    }
-
-    <h2>Add New Product</h2>
-    <p>DEBUG: Current FarmerId = @ViewBag.FarmerId</p>
-
-    <!-- Adding a Product -->
-    <form asp-action="AddProduct" asp-controller="Home" method="post">
-        @Html.AntiForgeryToken()
-
-        <div class="form-group">
-            <label asp-for="Name" class="control-label">Product Name</label>
-            <input asp-for="Name" class="form-control" required />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Category" class="control-label">Category</label>
-            <select asp-for="Category" class="form-control" required>
-                <option value="">-- Select Category --</option>
-                <option value="Seeds & Plants">Seeds & Plants</option>
-                <option value="Fertilizers & Soil Enhancements">Fertilizers & Soil Enhancements</option>
-                <option value="Pesticides & Herbicides">Pesticides & Herbicides</option>
-                <option value="Farming Tools & Equipment">Farming Tools & Equipment</option>
-                <option value="Irrigation Supplies">Irrigation Supplies</option>
-                <option value="Animal Feed & Livestock Supplies">Animal Feed & Livestock Supplies</option>
-                <option value="Protective Gear & Clothing">Protective Gear & Clothing</option>
-                <option value="Storage & Packing Materials">Storage & Packing Materials</option>
-            </select>
-            <span asp-validation-for="Category" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="ProductionDate" class="control-label">Production Date</label>
-            <input asp-for="ProductionDate" type="date" class="form-control" required />
-            <span asp-validation-for="ProductionDate" class="text-danger"></span>
-        </div>
-
-        <input type="hidden" asp-for="FarmerId" value="@ViewBag.FarmerId" />
-
-        <div class="form-group mt-4">
-            <button type="submit" class="btn btn-primary">Add Product</button>
-        </div>
-    </form>
-
-
-    <!-- Viewing Their Own Products -->
-    <div class="mt-5">
-        <h3>Your Products</h3>
-        @if (ViewBag.FarmerProducts != null && ((List<Product>)ViewBag.FarmerProducts).Count > 0)
+<div class="container mt-5 mb-5">
+    <div class="dashboard-container">
+        @if (TempData["SuccessMessage"] != null)
         {
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Production Date</th>
-                            <th>Days Since Production</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in (List<Product>)ViewBag.FarmerProducts)
-                        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+
+        <div class="dashboard-header">
+            <h2>Farmer Dashboard</h2>
+            <p class="debug-info">DEBUG: Current FarmerId = @ViewBag.FarmerId</p>
+        </div>
+
+        <!-- Adding a Product -->
+        <div class="dashboard-section">
+            <h3>Add New Product</h3>
+            <form asp-action="AddProduct" asp-controller="Home" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label">Product Name</label>
+                    <input asp-for="Name" class="form-control" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Category" class="control-label">Category</label>
+                    <select asp-for="Category" class="form-control" required>
+                        <option value="">-- Select Category --</option>
+                        <option value="Seeds & Plants">Seeds & Plants</option>
+                        <option value="Fertilizers & Soil Enhancements">Fertilizers & Soil Enhancements</option>
+                        <option value="Pesticides & Herbicides">Pesticides & Herbicides</option>
+                        <option value="Farming Tools & Equipment">Farming Tools & Equipment</option>
+                        <option value="Irrigation Supplies">Irrigation Supplies</option>
+                        <option value="Animal Feed & Livestock Supplies">Animal Feed & Livestock Supplies</option>
+                        <option value="Protective Gear & Clothing">Protective Gear & Clothing</option>
+                        <option value="Storage & Packing Materials">Storage & Packing Materials</option>
+                    </select>
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ProductionDate" class="control-label">Production Date</label>
+                    <input asp-for="ProductionDate" type="date" class="form-control" required />
+                    <span asp-validation-for="ProductionDate" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" asp-for="FarmerId" value="@ViewBag.FarmerId" />
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Viewing Their Own Products -->
+        <div class="dashboard-section">
+            <h3>Your Products</h3>
+            @if (ViewBag.FarmerProducts != null && ((List<Product>)ViewBag.FarmerProducts).Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="thead-dark">
                             <tr>
-                                <td>@product.Name</td>
-                                <td>@product.Category</td>
-                                <td>@product.ProductionDate.ToString("yyyy-MM-dd")</td>
-                                <td>@((DateTime.Now - product.ProductionDate).Days) days</td>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Production Date</th>
+                                <th>Days Since Production</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-info">You haven't added any products yet.</div>
-        }
+                        </thead>
+                        <tbody>
+                            @foreach (var product in (List<Product>)ViewBag.FarmerProducts)
+                            {
+                                <tr>
+                                    <td>@product.Name</td>
+                                    <td>@product.Category</td>
+                                    <td>@product.ProductionDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@((DateTime.Now - product.ProductionDate).Days) days</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">You haven't added any products yet.</div>
+            }
+        </div>
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+@section Styles {
     <style>
+        .dashboard-container {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .dashboard-header h2 {
+                color: var(--primary);
+                margin-bottom: 0.5rem;
+            }
+
+        .debug-info {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+            font-style: italic;
+        }
+
+        .dashboard-section {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+        }
+
+            .dashboard-section h3 {
+                color: var(--primary);
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border);
+            }
+
         .table-responsive {
             max-height: 500px;
             overflow-y: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 0;
         }
 
         th {
             position: sticky;
             top: 0;
-            background: #343a40;
-            color: white;
+            background: var(--primary) !important;
+            color: var(--primary-foreground) !important;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: var(--muted);
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid var(--border);
         }
     </style>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
