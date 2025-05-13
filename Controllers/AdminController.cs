@@ -28,6 +28,7 @@ namespace PROG7311_POE_ST10150702.Controllers
         public async Task<IActionResult> Dashboard()
         {
             var model = await GetDashboardViewModel();
+            // Initialize the NewEmployee property to prevent null reference
             model.NewEmployee = new Employee();
             return View(model);
         }
@@ -37,6 +38,7 @@ namespace PROG7311_POE_ST10150702.Controllers
         {
             try
             {
+                // Check if email already exists
                 var existingUser = await _userManager.FindByEmailAsync(email);
                 if (existingUser != null)
                 {
@@ -44,6 +46,7 @@ namespace PROG7311_POE_ST10150702.Controllers
                     return RedirectToAction("Dashboard");
                 }
 
+                // Create Identity User
                 var user = new ApplicationUser
                 {
                     UserName = email,
@@ -56,8 +59,12 @@ namespace PROG7311_POE_ST10150702.Controllers
 
                 if (result.Succeeded)
                 {
+                    // Add to Employee role
                     await _userManager.AddToRoleAsync(user, "Employee");
+
+                    // Create Employee record
                     employee.UserId = user.Id;
+                    // Set the User navigation property to null - it will be handled by EF
                     employee.User = null;
 
                     _context.Employees.Add(employee);
@@ -68,6 +75,7 @@ namespace PROG7311_POE_ST10150702.Controllers
                 }
                 else
                 {
+                    // Handle identity errors
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                     TempData["ErrorMessage"] = $"Failed to create user: {errors}";
                 }
@@ -88,8 +96,18 @@ namespace PROG7311_POE_ST10150702.Controllers
                 FarmerCount = await _context.Farmers.CountAsync(),
                 EmployeeCount = await _context.Employees.CountAsync(),
                 ProductCount = await _context.Products.CountAsync(),
-                Farmers = await _context.Farmers.Include(f => f.User).ToListAsync(),
-                Employees = await _context.Employees.Include(e => e.User).ToListAsync(),
+
+                // Load farmers with their users
+                Farmers = await _context.Farmers
+                    .Include(f => f.User)
+                    .ToListAsync(),
+
+                // Load employees with their users
+                Employees = await _context.Employees
+                    .Include(e => e.User)
+                    .ToListAsync(),
+
+                // Load products WITHOUT Include for FarmerId
                 Products = await _context.Products.ToListAsync()
             };
         }
@@ -97,7 +115,6 @@ namespace PROG7311_POE_ST10150702.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var employee = await _context.Employees
@@ -106,32 +123,44 @@ namespace PROG7311_POE_ST10150702.Controllers
 
                 if (employee == null)
                 {
+                    TempData["ErrorMessage"] = "Employee not found.";
                     return RedirectToAction("Dashboard");
                 }
 
-                if (employee.User != null)
-                {
-                    await _userManager.DeleteAsync(employee.User);
-                }
+                var user = employee.User;
 
+                // First remove employee (EF-tracked)
                 _context.Employees.Remove(employee);
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
 
-                TempData["SuccessMessage"] = "Employee deleted successfully!";
+                // Now delete Identity user (untracked)
+                if (user != null)
+                {
+                    var result = await _userManager.DeleteAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                        TempData["ErrorMessage"] = $"Employee deleted, but failed to delete user: {errors}";
+                        return RedirectToAction("Dashboard");
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Employee and user deleted successfully!";
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error deleting employee");
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
             }
 
             return RedirectToAction("Dashboard");
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> DeleteFarmer(int id)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var farmer = await _context.Farmers
@@ -141,33 +170,46 @@ namespace PROG7311_POE_ST10150702.Controllers
 
                 if (farmer == null)
                 {
+                    TempData["ErrorMessage"] = "Farmer not found.";
                     return RedirectToAction("Dashboard");
                 }
 
-                if (farmer.Products?.Any() == true)
+                var user = farmer.User;
+
+                // Remove products
+                if (farmer.Products != null && farmer.Products.Any())
                 {
                     _context.Products.RemoveRange(farmer.Products);
-                    await _context.SaveChangesAsync();
                 }
 
-                if (farmer.User != null)
-                {
-                    await _userManager.DeleteAsync(farmer.User);
-                }
-
+                // Remove the farmer (EF handles it)
                 _context.Farmers.Remove(farmer);
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await _context.SaveChangesAsync(); // Save changes BEFORE deleting user
 
-                TempData["SuccessMessage"] = "Farmer and all associated data deleted successfully!";
+                // Now delete the Identity user (AFTER SaveChanges)
+                if (user != null)
+                {
+                    var result = await _userManager.DeleteAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                        TempData["ErrorMessage"] = $"Farmer deleted, but failed to delete user: {errors}";
+                        return RedirectToAction("Dashboard");
+                    }
+                }
+
+                TempData["SuccessMessage"] = "Farmer and user deleted successfully!";
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error deleting farmer");
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
             }
 
             return RedirectToAction("Dashboard");
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteProduct(int id)
@@ -175,16 +217,27 @@ namespace PROG7311_POE_ST10150702.Controllers
             try
             {
                 var product = await _context.Products.FindAsync(id);
-                if (product != null)
+
+                if (product == null)
                 {
-                    _context.Products.Remove(product);
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Product deleted successfully!";
+                    TempData["ErrorMessage"] = "Product not found.";
+                    return RedirectToAction("Dashboard");
                 }
+
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Product deleted successfully!";
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product");
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+            }
 
             return RedirectToAction("Dashboard");
         }
+
+
     }
 }
