@@ -80,6 +80,42 @@ With a focus on usability and data-driven insights, the system supports both env
   </li>
 </ul>
 
+<br>
+<h2>🚀 How to Run using Command Line</h2>
+
+<p>This project can be executed directly from the command line using the .NET CLI. Follow these steps to build and run the application:</p>
+
+<h3>📋 Prerequisites</h3>
+<ul>
+  <li><strong>.NET 6.0 SDK</strong> or later installed (<a href="https://dotnet.microsoft.com/download" target="_blank">download here</a>)</li>
+  <li>Command line/Terminal access</li>
+  <li>Cloned repository (via <code>git clone</code> or downloaded ZIP)</li>
+</ul>
+
+<h3>⚙️ Execution Steps</h3>
+<ol>
+  <li>Navigate to the project root directory (where <code>Program.cs</code> and <code>.csproj</code> files are located)</li>
+  <li>Run the following commands in sequence:</li>
+</ol>
+
+<pre><code>dotnet build
+dotnet run</code></pre>
+
+<p>The application will:
+  <ul>
+    <li>Compile all dependencies (<code>build</code>)</li>
+    <li>Launch the web server on default port (<code>run</code>)</li>
+    <li>Output the localhost URL (typically <code>https://localhost:5001</code>)</li>
+  </ul>
+</p>
+
+<div style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 1em 0;">
+  <strong>💡 Note:</strong> For development environments, use <code>dotnet watch run</code> to enable hot-reload functionality.
+</div>
+
+<a href="#top">(Back to Top)</a>
+<br>
+
   <br>
   <h2>📦 Database Setup</h2>
 
