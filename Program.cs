@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(connectionString));
 
 // Updated Identity configuration with proper role support
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
