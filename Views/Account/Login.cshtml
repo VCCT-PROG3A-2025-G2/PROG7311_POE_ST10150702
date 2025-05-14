@@ -1,25 +1,61 @@
 ﻿@model LoginViewModel
 
-<div class="container mt-5">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-5">
+        <div class="login-container">
             <div class="login-card">
                 <div class="login-logo">
                     <img src="~/Images/Logo.png" alt="Agri-Energy Connect Logo" />
                 </div>
                 <form asp-action="Login">
                     <h2 class="text-center mb-4">Login</h2>
-                    <div class="form-group mb-3">
+                    <div class="form-group mb-4">
                         <input asp-for="Email" class="form-control" placeholder="Email" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-                    <div class="form-group mb-3">
-                        <input asp-for="Password" class="form-control" placeholder="Password" type="password" />
+                    <div class="form-group mb-4 password-input-group">
+                        <div class="input-group">
+                            <input asp-for="Password" class="form-control" placeholder="Password" type="password" id="passwordField" />
+                            <button class="btn btn-outline-secondary reveal-password" type="button">
+                                <i class="bi bi-eye-slash" id="passwordIcon"></i>
+                            </button>
+                        </div>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+
+                    <div class="text-center">
+                        <a asp-controller="Account" asp-action="Register" class="register-link">
+                            Register as a Farmer →
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordField = document.getElementById('passwordField');
+            const passwordIcon = document.getElementById('passwordIcon');
+            const revealButton = document.querySelector('.reveal-password');
+
+            revealButton.addEventListener('click', function () {
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    passwordIcon.classList.remove('bi-eye-slash');
+                    passwordIcon.classList.add('bi-eye');
+                } else {
+                    passwordField.type = 'password';
+                    passwordIcon.classList.remove('bi-eye');
+                    passwordIcon.classList.add('bi-eye-slash');
+                }
+            });
+        });
+    </script>
+}

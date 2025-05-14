@@ -1,65 +1,96 @@
 ﻿@model PROG7311_POE_ST10150702.ViewModels.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Register as Farmer";
+    Layout = "_Layout";
 }
 
-<h2>Register</h2>
+<div class="register-wrapper">
+    <!-- New wrapper for perfect centering -->
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-logo">
+                <img src="~/Images/Logo.png" alt="Agri-Energy Connect Logo" />
+            </div>
+            <form asp-action="Register">
+                <h2 class="text-center mb-4">Register as Farmer</h2>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Register">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword" class="control-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <!-- Farmer Fields -->
-            <div class="form-group">
-                <label asp-for="Region"></label>
-                <select asp-for="Region" class="form-control">
-                    <option value="">Select Region</option>
-                    <option value="North America">North America</option>
-                    <option value="South America">South America</option>
-                    <option value="Europe">Europe</option>
-                    <option value="Africa">Africa</option>
-                    <option value="Asia">Asia</option>
-                    <option value="Australasia">Australasia</option>
-                    <option value="Other">Other</option>
-                </select>
-                <span asp-validation-for="Region" class="text-danger"></span>
-            </div>
-                <div class="form-check">
+                <div class="row g-3">
+                    <!-- Added gutter spacing -->
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <!-- Floating labels -->
+                            <input asp-for="FirstName" class="form-control" placeholder=" " />
+                            <label asp-for="FirstName">First Name</label>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="LastName" class="form-control" placeholder=" " />
+                            <label asp-for="LastName">Last Name</label>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" class="form-control" placeholder=" " />
+                    <label asp-for="Email">Email</label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" class="form-control" placeholder=" " />
+                            <label asp-for="Password">Password</label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder=" " />
+                            <label asp-for="ConfirmPassword">Confirm Password</label>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <select asp-for="Region" class="form-control">
+                        <option value=""></option>
+                        <option value="North America">North America</option>
+                        <option value="South America">South America</option>
+                        <option value="Europe">Europe</option>
+                        <option value="Africa">Africa</option>
+                        <option value="Asia">Asia</option>
+                        <option value="Australasia">Australasia</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <label asp-for="Region">Region</label>
+                    <span asp-validation-for="Region" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
                     <input asp-for="AcceptedPOPPIA" class="form-check-input" />
-                    <label asp-for="AcceptedPOPPIA" class="form-check-label"></label>
+                    <label asp-for="AcceptedPOPPIA" class="form-check-label">I accept the POPI Act terms</label>
                     <span asp-validation-for="AcceptedPOPPIA" class="text-danger"></span>
-                </div>        
-            <div class="form-group">
-                <input type="submit" value="Register" class="btn btn-primary" />
-            </div>
-        </form>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg py-3">Register</button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a asp-controller="Account" asp-action="Login" class="register-link">
+                        ← Back to Login
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

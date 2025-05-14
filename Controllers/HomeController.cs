@@ -51,6 +51,7 @@ namespace PROG7311_POE_ST10150702.Controllers
                 .ToListAsync();
 
             ViewBag.FarmerId = farmer.FarmerId;
+            ViewBag.FarmerFirstName = farmer.FirstName;
             ViewBag.FarmerProducts = products;
 
             return View(new Product { FarmerId = farmer.FarmerId });
@@ -93,6 +94,7 @@ namespace PROG7311_POE_ST10150702.Controllers
             var user = await _userManager.GetUserAsync(User);
             var farmer = await _context.Farmers.FirstOrDefaultAsync(f => f.UserId == user.Id);
             ViewBag.FarmerId = farmer?.FarmerId;
+            ViewBag.FarmerFirstName = farmer?.FirstName;
 
             return View("FarmerView", product);
         }
@@ -100,6 +102,9 @@ namespace PROG7311_POE_ST10150702.Controllers
         [Authorize(Roles = "Employee")]
         public async Task<IActionResult> EmployeeView()
         {
+            // Set the navbar class for the Employee view
+            ViewData["NavbarClass"] = "navbar-custom";
+
             var model = new EmployeeDashboardViewModel
             {
                 Farmers = await _context.Farmers

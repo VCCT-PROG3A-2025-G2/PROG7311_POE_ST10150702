@@ -13,7 +13,7 @@
 
         <div class="dashboard-header">
             <h2>Farmer Dashboard</h2>
-            <p class="debug-info">DEBUG: Current FarmerId = @ViewBag.FarmerId</p>
+            <p class="welcome-message">Welcome Back, @ViewBag.FarmerFirstName!</p>
         </div>
 
         <!-- Adding a Product -->
@@ -30,7 +30,7 @@
 
                 <div class="form-group">
                     <label asp-for="Category" class="control-label">Category</label>
-                    <select asp-for="Category" class="form-control" required>
+                    <select asp-for="Category" class="form-control category-select" required>
                         <option value="">-- Select Category --</option>
                         <option value="Seeds & Plants">Seeds & Plants</option>
                         <option value="Fertilizers & Soil Enhancements">Fertilizers & Soil Enhancements</option>
@@ -116,10 +116,15 @@
                 margin-bottom: 0.5rem;
             }
 
-        .debug-info {
-            font-size: 0.8rem;
-            color: var(--muted-foreground);
-            font-style: italic;
+        .welcome-message {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .category-select {
+            min-width: 250px;
+            padding: 0.5rem 1rem;
         }
 
         .dashboard-section {

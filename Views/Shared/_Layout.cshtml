@@ -3,12 +3,19 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Agri-Energy Connect</title>
+    <title>@ViewData["Title"] Agri-Energy Connect</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     @RenderSection("Styles", required: false)
-    <link rel="icon" type="image/x-icon" href="~/favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
+    
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Agri-Energy" />
+    <link rel="manifest" href="/site.webmanifest" />
 
 
     <style>
@@ -55,13 +62,13 @@
                         @if (User.IsInRole("Farmer"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Farmer" asp-action="Dashboard">My Products</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                         }
                         @if (User.IsInRole("Employee"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Employee" asp-action="Dashboard">Search Products</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                         }
                     </ul>
@@ -80,7 +87,7 @@
         </nav>
     </header>
 
-    <div class="container-fluid mt-4 px-4 flex-grow-1">"
+    <div class="container-fluid mt-4 px-4 flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
