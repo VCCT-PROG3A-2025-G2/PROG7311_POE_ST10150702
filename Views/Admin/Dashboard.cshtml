@@ -5,6 +5,27 @@
     Layout = "_Layout";
 }
 
+<!--
+    ===== Admin Dashboard Summary =====
+
+    This page is the main control panel for Admins.
+    It shows:
+    - Summary cards for the total number of Farmers, Employees, and Products
+    - Tabs to manage:
+        - Employees: Add new, view list, delete
+        - Farmers: View list and delete
+        - Products: View all and delete (with farmer info shown)
+
+    Features:
+    - Uses Bootstrap tabs for organized navigation
+    - Modal for adding new employees
+    - Modal confirmation for deletes
+    - TempData messages for feedback (success/error)
+    - Client-side validation and tab persistence via JavaScript
+
+    ViewModel: AdminDashboardViewModel
+-->
+
 <div class="container mt-5">
     <!-- Notification Messages -->
     @if (TempData["SuccessMessage"] != null)

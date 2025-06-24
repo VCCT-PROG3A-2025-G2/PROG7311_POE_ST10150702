@@ -5,6 +5,21 @@
     Layout = "_Layout";
 }
 
+<!--
+    ===== Employee Dashboard Summary =====
+
+    This page is used by Employees to:
+    - View a list of all Farmers and their details
+    - View all Products and see which farmer each product belongs to
+    - Add new Farmers using a modal form
+    - Filter products by Farmer and Category using dropdowns
+
+    It includes:
+    - Bootstrap layout with two tables side-by-side
+    - TempData alerts for success and error messages
+    - jQuery-powered filters and form validation
+-->
+
 <div class="container-fluid mt-4 wide-container">
     <!-- Notification Messages -->
     @if (TempData["SuccessMessage"] != null)

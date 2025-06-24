@@ -3,6 +3,28 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PROG7311_POE_ST10150702.Models;
 
+/*
+    ===== ApplicationDbContext =====
+
+    Extends IdentityDbContext with ApplicationUser.
+
+    DbSets:
+    - Farmers
+    - Employees
+    - Products
+
+    Overrides OnModelCreating to:
+    - Rename default ASP.NET Identity tables with AspNet prefix.
+    - Configure entities:
+      * Farmer: auto-increment FarmerId, links to ApplicationUser via UserId.
+      * Product: auto-increment ProductId, linked to Farmer with restricted delete behavior.
+      * Employee: auto-increment EmployeeId, links to ApplicationUser via UserId.
+
+    Purpose:
+    - Manages application data and identity integration.
+*/
+
+
 namespace PROG7311_POE_ST10150702.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

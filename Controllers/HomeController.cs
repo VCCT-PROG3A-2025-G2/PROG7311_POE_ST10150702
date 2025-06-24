@@ -7,6 +7,31 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using PROG7311_POE_ST10150702.ViewModels;
 
+/*
+    ===== HomeController =====
+
+    Handles the main application views and user-specific dashboards.
+
+    Actions:
+    - Index():            Displays the home page.
+    - Privacy():          Displays the privacy policy page.
+    - FarmerView():       Displays the dashboard for Farmers with their products.
+    - AddProduct(Product):Allows Farmers to add new products.
+    - EmployeeView():     Displays the dashboard for Employees with farmer and product management.
+    - AddFarmer(...):     Allows Employees to add new Farmer users and profiles.
+    - Error():            Displays the error page.
+
+    Role-based access:
+    - FarmerView and AddProduct restricted to Farmers.
+    - EmployeeView and AddFarmer restricted to Employees.
+
+    Dependencies:
+    - ILogger for logging
+    - ApplicationDbContext for data access
+    - UserManager for user management
+*/
+
+
 namespace PROG7311_POE_ST10150702.Controllers
 {
     public class HomeController : Controller

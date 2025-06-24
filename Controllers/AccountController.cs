@@ -7,6 +7,25 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
+/*
+    ===== AccountController =====
+
+    This controller handles user authentication and registration.
+
+    Features:
+    - Login (GET/POST) with role-based redirection (Admin, Employee, Farmer)
+    - Register (GET/POST) for new Farmers with profile creation
+    - Logout (POST) to sign out users
+    - AccessDenied (GET) for unauthorized access handling
+
+    Uses:
+    - UserManager for user and role management
+    - SignInManager for login/logout handling
+    - ApplicationDbContext for database access
+    - ILogger for logging activities
+*/
+
+
 namespace PROG7311_POE_ST10150702.Controllers
 {
     public class AccountController : Controller
@@ -69,7 +88,7 @@ namespace PROG7311_POE_ST10150702.Controllers
                     // Role priority: Admin > Employee > Farmer
                     if (roles.Contains("Admin"))
                     {
-                        return RedirectToAction("Dashboard", "Admin"); // Explicit Admin redirect
+                        return RedirectToAction("Dashboard", "Admin"); 
                     }
                     else if (roles.Contains("Employee"))
                     {

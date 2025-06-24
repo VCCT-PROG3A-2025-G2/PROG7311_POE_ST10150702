@@ -22,6 +22,7 @@ html {
     --background: #f1f8f2;
     --foreground: #1e2e1e;
     --primary: #2E6F40;
+    --navbar: #FFFFFF;
     --primary-foreground: #f5fdf7;
     --secondary: #e8f6ec;
     --secondary-foreground: #1e2e1e;
@@ -223,7 +224,7 @@ body {
 
 .register-container {
     width: 100%;
-    max-width: 800px; /* Wider maximum width */
+    max-width: 800px; 
     margin: 0 auto;
 }
 

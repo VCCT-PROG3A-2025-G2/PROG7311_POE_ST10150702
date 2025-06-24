@@ -1,33 +1,56 @@
 ﻿@model PROG7311_POE_ST10150702.Models.Product
-@{
-    Layout = "_Layout";
-    ViewData["Title"] = "Farmer Dashboard";
-}
 
+@{
+    Layout = "_Layout"; // Uses the shared layout page
+    ViewData["Title"] = "Farmer Dashboard"; // Sets the page title
+}
+<!--
+    ===== Farmer Dashboard Page Summary =====
+
+    This page lets a farmer:
+    - See a welcome message with their name
+    - Add a new product using a form (name, category, production date)
+    - View a table of all their previously added products
+
+    Key features:
+    - Displays a success alert after adding a product
+    - Uses ViewBag to pass in farmer name, ID, and their products
+    - Shows how many days have passed since each product was produced
+    - Includes custom styles for layout and table design
+    - Client-side validation is enabled
+
+    The form submits to HomeController's AddProduct action.
+-->
+
+<!-- Page Container for Farmer Dashboard -->
 <div class="container mt-5 mb-5">
     <div class="dashboard-container">
+
+        <!-- Display success message if a product was added -->
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success">@TempData["SuccessMessage"]</div>
         }
 
+        <!-- Dashboard Header: Welcome Message -->
         <div class="dashboard-header">
             <h2>Farmer Dashboard</h2>
             <p class="welcome-message">Welcome Back, @ViewBag.FarmerFirstName!</p>
         </div>
 
-        <!-- Adding a Product -->
+        <!-- Section: Form to Add a New Product -->
         <div class="dashboard-section">
             <h3>Add New Product</h3>
             <form asp-action="AddProduct" asp-controller="Home" method="post">
-                @Html.AntiForgeryToken()
-
+                @Html.AntiForgeryToken() <!-- CSRF protection -->
+                <!-- Input: Product Name -->
                 <div class="form-group">
                     <label asp-for="Name" class="control-label">Product Name</label>
                     <input asp-for="Name" class="form-control" required />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
+                <!-- Dropdown: Select Product Category -->
                 <div class="form-group">
                     <label asp-for="Category" class="control-label">Category</label>
                     <select asp-for="Category" class="form-control category-select" required>
@@ -44,23 +67,28 @@
                     <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
 
+                <!-- Input: Production Date -->
                 <div class="form-group">
                     <label asp-for="ProductionDate" class="control-label">Production Date</label>
                     <input asp-for="ProductionDate" type="date" class="form-control" required />
                     <span asp-validation-for="ProductionDate" class="text-danger"></span>
                 </div>
 
+                <!-- Hidden Field: Link Product to Farmer -->
                 <input type="hidden" asp-for="FarmerId" value="@ViewBag.FarmerId" />
 
+                <!-- Submit Button -->
                 <div class="form-group mt-4">
                     <button type="submit" class="btn btn-primary">Add Product</button>
                 </div>
             </form>
         </div>
 
-        <!-- Viewing Their Own Products -->
+        <!-- Section: List of Farmer's Existing Products -->
         <div class="dashboard-section">
             <h3>Your Products</h3>
+
+            <!-- Display product table if the farmer has added products -->
             @if (ViewBag.FarmerProducts != null && ((List<Product>)ViewBag.FarmerProducts).Count > 0)
             {
                 <div class="table-responsive">
@@ -89,12 +117,14 @@
             }
             else
             {
+                <!-- Message shown when no products exist -->
                 <div class="alert alert-info">You haven't added any products yet.</div>
             }
         </div>
     </div>
 </div>
 
+<!-- Page-Specific Styles for Dashboard -->
 @section Styles {
     <style>
         .dashboard-container {
@@ -176,6 +206,7 @@
     </style>
 }
 
+<!-- Client-Side Validation Scripts -->
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
