@@ -80,40 +80,69 @@ With a focus on usability and data-driven insights, the system supports both env
   </li>
 </ul>
 
+<br>
+<h2>🚀 How to Run using Command Line</h2>
+
+<p>This project can be executed directly from the command line using the .NET CLI. Follow these steps to build and run the application:</p>
+
+<h3>📋 Prerequisites</h3>
+<ul>
+  <li><strong>.NET 6.0 SDK</strong> or later installed (<a href="https://dotnet.microsoft.com/download" target="_blank">download here</a>)</li>
+  <li>Command line/Terminal access</li>
+  <li>Cloned repository (via <code>git clone</code> or downloaded ZIP)</li>
+</ul>
+
+<h3>⚙️ Execution Steps</h3>
+<ol>
+  <li>Navigate to the project root directory (where <code>Program.cs</code> and <code>.csproj</code> files are located)</li>
+  <li>Run the following commands in sequence:</li>
+</ol>
+
+<pre><code>dotnet build
+dotnet run</code></pre>
+
+<p>The application will:
+  <ul>
+    <li>Compile all dependencies (<code>build</code>)</li>
+    <li>Launch the web server on default port (<code>run</code>)</li>
+    <li>Output the localhost URL (typically <code>https://localhost:5001</code>)</li>
+  </ul>
+</p>
+
+<div style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 1em 0;">
+  <strong>💡 Note:</strong> For development environments, use <code>dotnet watch run</code> to enable hot-reload functionality.
+</div>
+
+<a href="#top">(Back to Top)</a>
+<br>
+
   <br>
   <h2>📦 Database Setup</h2>
 
-<p>After cloning the repository, follow these steps to initialize the database using Entity Framework Core and LocalDB:</p>
+<p>This project uses <strong>SQLite</strong> as its database engine, and the database file is included in the repository. No additional configuration or setup is required after cloning the project.</p>
 
+<p>After cloning the repository:</p>
 <ol>
   <li>Open the solution in <strong>Visual Studio 2022</strong>.</li>
-  <li>Go to <code>Tools</code> → <code>NuGet Package Manager</code> → <code>Package Manager Console</code>.</li>
-  <li>In the Package Manager Console, run the following commands:</li>
+  <li>Build and run the project. The application will connect to the pre-configured SQLite database.</li>
 </ol>
 
-<pre>
-<code>
-Add-Migration InitialCreate
-Update-Database
-</code>
-</pre>
-
-<p>These commands will:</p>
+<p><strong>✔️ Benefits:</strong></p>
 <ul>
-  <li>Generate the initial database schema from your models.</li>
-  <li>Create and seed the local database (if configured).</li>
+  <li>No need to install or configure SQL Server or LocalDB.</li>
+  <li>Database schema and seed data are already included.</li>
 </ul>
 
-<p><strong>💡 Tip:</strong> Ensure your <code>appsettings.json</code> file includes a valid LocalDB connection string, such as:</p>
+<p><strong>💡 Note:</strong> The database file is located at <code>wwwroot/data/AgriEnergyConnect.db</code>.</p>
 
 <pre>
 <code>
 "ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=YourDbName;Trusted_Connection=True;"
+  "DefaultConnection": "Data Source=wwwroot/data/AgriEnergyConnect.db"
 }
 </code>
 </pre>
-</p>
+
 
 <h2>📘 Usage</h2>
 
@@ -221,6 +250,12 @@ public async Task&lt;IActionResult&gt; Register(RegisterViewModel model)
 
 <h3>🌾 Farmer View</h3>
 <p>This page allows Farmers to manage their products—view, add, or update their listings.</p>
+<p>To access the Farmer View, use the pre-seeded login:</p>
+<ul>
+  <li>Email: <code>Jords@gmail.com</code></li>
+  <li>Password: <code>Jords@123</code></li>
+</ul>
+
 <img src="README_Files/FarmerView.PNG" alt="Farmer View" style="width:45%; display: block; margin: 1em auto;">
 
 <h4>📦 Add Product Logic (Farmer Only)</h4>
@@ -269,19 +304,141 @@ public async Task&lt;IActionResult&gt; AddProduct(Product product)
 
 <h3>👨‍🌾 Employee View</h3>
 <p>Employees can view all farmers and products, add new farmers, and filter products by category or farmer.</p>
+<p>To access the Employee View, use the pre-seeded login:</p>
+<ul>
+  <li>Email: <code>JohnM@gmail.com</code></li>
+  <li>Password: <code>Emp@123</code></li>
+</ul>
 <img src="README_Files/EmployeeView.PNG" alt="Employee View" style="width:100%; display: block; margin: 1em auto;">
 
 <hr>
 
 <h3>🛠️ Admin Dashboard</h3>
-<p>To access the Admin Dashboard, use the pre-seeded login:</p>
+
+<p>The Admin Dashboard provides full control over users and product data within the system. A default admin account is pre-seeded for convenience:</p>
+
 <ul>
-  <li>Email: <code>admin@farmcentral.com</code></li>
-  <li>Password: <code>Admin@1234!</code></li>
+  <li><strong>Email:</strong> <code>admin@farmcentral.com</code></li>
+  <li><strong>Password:</strong> <code>Admin@1234!</code></li>
 </ul>
-<p>This account is auto-created in <code>Program.cs</code> on startup.</p>
-<img src="README_Files/AdminLogin.PNG" alt="Admin Login" style="width:45%; display: block; margin: 1em auto;">
 
+<hr>
 
+<h4>📊 Overview Tab</h4>
+<p>After logging in, the Admin is greeted with an overview displaying system statistics and summaries:</p>
+<img src="README_Files/AdminDashboard1.PNG" alt="Admin Overview" style="width:100%; display: block; margin: 1em auto;">
 
+<hr>
 
+<h4>👨‍💼 Employees Tab</h4>
+<p>This section allows the Admin to view, add, or delete Employees:</p>
+<img src="README_Files/AdminDashboard2.PNG" alt="Employees View" style="width:100%; display: block; margin: 1em auto;">
+
+<p>Clicking <strong>"Add Employee"</strong> opens a form to input new employee details:</p>
+<img src="README_Files/AdminDashboard3.PNG" alt="Add Employee" style="width:50%; display: block; margin: 1em auto;">
+
+<hr>
+
+<h4>🚜 Farmers Tab</h4>
+<p>Admins can manage all Farmer accounts here — create, view, or remove them as needed:</p>
+<img src="README_Files/AdminDashboard4.PNG" alt="Farmers View" style="width:100%; display: block; margin: 1em auto;">
+
+<hr>
+
+<h4>🛒 Products Tab</h4>
+<p>In this tab, Admins can manage all product records. They can view all products in the system or remove any as needed:</p>
+<img src="README_Files/AdminDashboard5.PNG" alt="Products View" style="width:100%; display: block; margin: 1em auto;">
+
+<br>
+
+<h2>🗃️ Database Entries</h2>
+
+<p>
+The database is pre-created and seeded with temporary data to ensure the prototype runs smoothly out of the box.
+Below are previews of the key seeded tables:
+</p>
+
+<hr>
+
+<h4>👨‍🌾 Farmers Table</h4>
+<p>Contains all registered farmers, seeded with example users to demonstrate functionality.</p>
+<img src="README_Files/SELECT_Farmers.PNG" alt="Farmers Table" style="width:100%; display: block; margin: 1em auto;">
+
+<hr>
+
+<h4>🛒 Products Table</h4>
+<p>Displays all products currently stored in the system, each associated with a farmer.</p>
+<img src="README_Files/SELECT_Products.PNG" alt="Products Table" style="width:100%; display: block; margin: 1em auto;">
+
+<hr>
+
+<h4>👔 Employees Table</h4>
+<p>Includes all employee records managed via the Admin Dashboard.</p>
+<img src="README_Files/SELECT_Employees.PNG" alt="Employees Table" style="width:100%; display: block; margin: 1em auto;">
+
+<hr>
+
+<h4>🔐 Roles Table</h4>
+<p>Defines user roles used for role-based access control within the system (e.g., Admin, Employee, Farmer).</p>
+<img src="README_Files/SELECT_ROLES.PNG" alt="Roles Table" style="width:100%; display: block; margin: 1em auto;">
+
+<br>
+<h2>🗺️ Roadmap</h2>
+
+<h3>✅ Completed Features</h3>
+<ul>
+  <li><strong>Create Working Relational Database</strong> - SQLite database with proper relationships</li>
+  <li><strong>Develop Two Distinct Roles (Farmer & Employee)</strong> - Role-based authentication system</li>
+  <li><strong>Farmers can Add Products & View Own Products</strong> - Complete CRUD functionality</li>
+  <li><strong>Employees can View all Products & Add Farmers</strong> - Administrative features</li>
+  <li><strong>Secure Login Functionality with Authentication</strong> - ASP.NET Core Identity</li>
+  <li><strong>User-Friendly UX/UI</strong> - Responsive design with intuitive navigation</li>
+  <li><strong>Data Validation & Error Checking</strong> - Form validation and error handling</li>
+  <li><strong>Populate Database with Sample Data</strong> - Pre-seeded users and products</li>
+</ul>
+
+<h3>🔜 Planned Features</h3>
+<ul>
+  <li><strong>Develop Marketplace</strong> - Trading platform for farmers</li>
+  <li><strong>Create Forums Page</strong> - Community discussion board</li>
+  <li><strong>Ensure Mobile-Friendly UX/UI</strong> - Enhanced mobile responsiveness</li>
+  <li><strong>Create Education Page</strong> - Resources for sustainable farming</li>
+</ul>
+
+<h3>📊 Progress</h3>
+
+<div style="margin: 1em 0;">
+  <strong>Prototype:</strong><br>
+  <img src="https://img.shields.io/badge/Progress-100%25-brightgreen?style=for-the-badge" alt="Prototype Progress">
+</div>
+
+<div style="margin: 1em 0;">
+  <strong>Full App:</strong><br>
+  <img src="https://img.shields.io/badge/Progress-60%25-orange?style=for-the-badge" alt="Full App Progress">
+</div>
+
+<a href="#top">(Back to Top)</a>
+<br>
+
+<h2>Acknowlegements</h2>
+<h3>Reference List</h3>
+freeCodeCamp (2024) Model-view architecture: A comprehensive guide. Available at: https://www.freecodecamp.org/news/model-view-architecture/ (Accessed: 7-14 May 2024).
+<br><br>
+freeCodeCamp (2024) How to write a good README file. Available at: https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/ (Accessed: 7-14 May 2024).
+<br><br>
+Microsoft (2024) ASP.NET overview. Available at: https://learn.microsoft.com/en-us/aspnet/overview (Accessed: 7-14 May 2024).
+<br><br>
+Microsoft (2024) Entity Framework documentation. Available at: https://learn.microsoft.com/en-us/aspnet/entity-framework (Accessed: 7-14 May 2024).
+<br><br>
+Microsoft (2024) Introduction to ASP.NET Identity. Available at: https://learn.microsoft.com/en-us/aspnet/identity/overview/getting-started/introduction-to-aspnet-identity (Accessed: 7-14 May 2024).
+<br><br>
+SQLite Tutorial (2024) SQLite programming tutorials. Available at: https://www.sqlitetutorial.net/ (Accessed: 7-14 May 2024).
+<br><br>
+Contentsquare (2024) UX design examples and best practices. Available at: https://contentsquare.com/guides/ux-design/examples/ (Accessed: 7-14 May 2024).
+<br><br>
+<h3>AI Usage</h3>
+In the course of this project, AI tools were utilized as a supplementary resource to aid in understanding and exploring certain coding techniques. These tools were integrated into our workflow to enhance our understanding but were not employed to perform tasks autonomously, ensuring that all development work was carried out by the project team.
+<br>
+OpenAI: OpenAI, 2025. ChatGPT. Available at: https://openai.com [Accessed 7-14 May 2025].
+<br>
+Deepseek AI: Deepseek AI, 2025. Deepseek AI. Available at: https://deepseek.ai [Accessed 7-14 May 2025].
